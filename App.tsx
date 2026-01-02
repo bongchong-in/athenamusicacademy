@@ -431,7 +431,7 @@ export default function App() {
 
         {/* Footer / Location */}
         <section id="contact" className="mt-32 bg-stone-texture p-6 sm:p-8 md:p-12 border-2 border-[var(--stone-dark)] text-white relative overflow-hidden slide-up">
-          <div className="relative z-10 grid md:grid-cols-2 gap-12 items-end">
+          <div className="relative z-10 grid md:grid-cols-2 gap-12 items-end mb-12">
             <div className="space-y-6">
               {/* Branding & Address */}
               <div>
@@ -469,6 +469,14 @@ export default function App() {
                   </button>
               </div>
             </div>
+          </div>
+          
+          {/* Credits */}
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center pt-8 border-t-2 border-[var(--stone-dark)] text-[10px] font-bold uppercase tracking-widest gap-2">
+            <span className="opacity-75">© {new Date().getFullYear()} Athena Music Academy</span>
+            <span className="text-center md:text-right">
+              Designed, Gifted and Supported by <a href="https://mxsstudio.edgentiq.com" target="_blank" rel="noopener noreferrer" className="border-b border-white hover:bg-white hover:text-[var(--stone-dark)] transition-colors pb-px mx-1">MxS Studio</a> with ❤️
+            </span>
           </div>
 
           {/* Decorative Big Text (Background) */}
