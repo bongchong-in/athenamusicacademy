@@ -5,6 +5,7 @@ export default function App() {
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Scroll Animation Observer
@@ -37,10 +38,41 @@ export default function App() {
     }
   }, [isBioModalOpen, isAssessmentModalOpen, isContactModalOpen, isMobileMenuOpen]);
 
-  const handleAssessmentSubmit = (e: React.FormEvent) => {
+  const handleAssessmentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Thank you for your interest. We will contact you shortly.");
-    setIsAssessmentModalOpen(false);
+    setIsSubmitting(true);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    // Google Form Configuration
+    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc7lAaTYfbjWyzRO51u_jYJztTP0axElR8qVvMwSk-TD62GVA/formResponse";
+    
+    // Map form fields to Google Form entry IDs
+    const data = new URLSearchParams();
+    data.append("entry.1375594581", formData.get("name") as string);  // Name
+    data.append("entry.1103746927", formData.get("email") as string); // Email
+    data.append("entry.1834217259", formData.get("phone") as string); // Phone
+
+    try {
+      await fetch(FORM_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: data
+      });
+      
+      alert("Thank you for your interest. We will contact you shortly.");
+      setIsAssessmentModalOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("There was an error submitting your request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollToSection = (e: React.MouseEvent, id: string) => {
@@ -600,6 +632,7 @@ export default function App() {
                  <label className="block text-[10px] font-bold uppercase tracking-widest mb-1 group-focus-within:text-[var(--laterite-red)] transition-colors">Name</label>
                  <input 
                     type="text" 
+                    name="name"
                     required 
                     className="w-full bg-transparent border-2 border-[var(--stone-dark)] p-3 text-sm focus:bg-white outline-none transition-colors placeholder:text-[var(--stone-dark)]/30" 
                     placeholder="ENTER FULL NAME" 
@@ -609,6 +642,7 @@ export default function App() {
                  <label className="block text-[10px] font-bold uppercase tracking-widest mb-1 group-focus-within:text-[var(--laterite-red)] transition-colors">Email</label>
                  <input 
                     type="email" 
+                    name="email"
                     required 
                     className="w-full bg-transparent border-2 border-[var(--stone-dark)] p-3 text-sm focus:bg-white outline-none transition-colors placeholder:text-[var(--stone-dark)]/30" 
                     placeholder="EMAIL ADDRESS" 
@@ -618,14 +652,15 @@ export default function App() {
                  <label className="block text-[10px] font-bold uppercase tracking-widest mb-1 group-focus-within:text-[var(--laterite-red)] transition-colors">Phone</label>
                  <input 
                     type="tel" 
+                    name="phone"
                     required 
                     className="w-full bg-transparent border-2 border-[var(--stone-dark)] p-3 text-sm focus:bg-white outline-none transition-colors placeholder:text-[var(--stone-dark)]/30" 
                     placeholder="PHONE NUMBER" 
                  />
               </div>
 
-              <button type="submit" className="w-full bg-[var(--stone-dark)] text-white py-4 font-bold uppercase tracking-widest hover:bg-[var(--laterite-red)] transition-colors mt-4 border-2 border-transparent">
-                Submit Request
+              <button type="submit" disabled={isSubmitting} className={`w-full bg-[var(--stone-dark)] text-white py-4 font-bold uppercase tracking-widest hover:bg-[var(--laterite-red)] transition-colors mt-4 border-2 border-transparent ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                {isSubmitting ? "Submitting..." : "Submit Request"}
               </button>
             </form>
           </div>
